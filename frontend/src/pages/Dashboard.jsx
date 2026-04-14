@@ -1,0 +1,329 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+    Cell,
+    Legend,
+    Pie,
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
+} from "recharts";
+
+function Dashboard() {
+  const navigate = useNavigate();
+  const [budget, setBudget] = useState("");
+  const [expenses, setExpenses] = useState([]);
+  const [formData, setFormData] = useState({
+    title: "",
+    amount: "",
+    category: "",
+    date: "",
+    note: "",
+  });
+
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+
+  useEffect(() => {
+    if (!userInfo) {
+      navigate("/login");
+    } else {
+      fetchExpenses();
+    }
+    setBudget(localStorage.getItem("monthlyBudget") || "");
+  }, []);
+
+  const fetchExpenses = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/expenses", {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      });
+
+      setExpenses(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+    setBudget(localStorage.getItem("monthlyBudget") || "");
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+
+  const addExpense = async (e) => {
+    e.preventDefault();
+
+    try {
+      await axios.post(
+        "http://localhost:5000/api/expenses",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        }
+      );
+
+      setFormData({
+        title: "",
+        amount: "",
+        category: "",
+        date: "",
+        note: "",
+      });
+
+      fetchExpenses();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteExpense = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/expenses/${id}`, {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      });
+
+      fetchExpenses();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const logoutHandler = () => {
+    localStorage.removeItem("userInfo");
+    navigate("/login");
+  };
+
+  const handleBudgetSave = () => {
+  localStorage.setItem("monthlyBudget", budget);
+};
+
+  const currentMonth = new Date().getMonth();
+const currentYear = new Date().getFullYear();
+
+const monthlyExpenses = expenses.filter((expense) => {
+  const expenseDate = new Date(expense.date);
+
+  return (
+    expenseDate.getMonth() === currentMonth &&
+    expenseDate.getFullYear() === currentYear
+  );
+});
+
+const totalExpenses = monthlyExpenses.reduce(
+  (acc, expense) => acc + expense.amount,
+  0
+);
+
+const remainingBalance = (Number(budget) || 0) - totalExpenses;
+
+const categoryData = [];
+
+expenses.forEach((expense) => {
+  const existingCategory = categoryData.find(
+    (item) => item.name === expense.category
+  );
+
+  if (existingCategory) {
+    existingCategory.value += expense.amount;
+  } else {
+    categoryData.push({
+      name: expense.category,
+      value: expense.amount,
+    });
+  }
+});
+
+const COLORS = [
+  "#0088FE",
+  "#00C49F",
+  "#FFBB28",
+  "#FF8042",
+  "#A855F7",
+  "#EF4444",
+];
+  
+
+  return (
+  <div className="min-h-screen bg-gray-100 p-6">
+    <div className="max-w-7xl mx-auto">
+      
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-4xl font-bold text-gray-800">
+          Welcome, {userInfo?.name} 👋
+        </h1>
+
+        <button
+          onClick={logoutHandler}
+          className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+        >
+          Logout
+        </button>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white p-6 rounded-2xl shadow">
+          <h3 className="text-lg font-semibold mb-2">Monthly Budget</h3>
+          <input
+            type="number"
+            value={budget}
+            onChange={(e) => setBudget(e.target.value)}
+            placeholder="Set Budget"
+            className="border p-2 rounded w-full mb-3"
+          />
+          <button
+            onClick={handleBudgetSave}
+            className="bg-blue-500 text-white px-4 py-2 rounded w-full"
+          >
+            Save Budget
+          </button>
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl shadow">
+          <h3 className="text-lg font-semibold">Total Expenses</h3>
+          <p className="text-3xl font-bold text-red-500 mt-3">
+            ₹{totalExpenses}
+          </p>
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl shadow">
+          <h3 className="text-lg font-semibold">Remaining Balance</h3>
+          <p
+            className={`text-3xl font-bold mt-3 ${
+              remainingBalance < 0 ? "text-red-500" : "text-green-500"
+            }`}
+          >
+            ₹{remainingBalance}
+          </p>
+        </div>
+      </div>
+
+      {/* Add Expense Form */}
+      <div className="bg-white p-6 rounded-2xl shadow mb-8">
+        <h2 className="text-2xl font-semibold mb-4">Add Expense</h2>
+
+        <form
+          onSubmit={addExpense}
+          className="grid md:grid-cols-5 gap-4"
+        >
+          <input
+            type="text"
+            name="title"
+            placeholder="Title"
+            value={formData.title}
+            onChange={handleChange}
+            className="border p-3 rounded"
+            required
+          />
+
+          <input
+            type="number"
+            name="amount"
+            placeholder="Amount"
+            value={formData.amount}
+            onChange={handleChange}
+            className="border p-3 rounded"
+            required
+          />
+
+          <input
+            type="text"
+            name="category"
+            placeholder="Category"
+            value={formData.category}
+            onChange={handleChange}
+            className="border p-3 rounded"
+            required
+          />
+
+          <input
+            type="date"
+            name="date"
+            value={formData.date}
+            onChange={handleChange}
+            className="border p-3 rounded"
+            required
+          />
+
+          <button
+            type="submit"
+            className="bg-green-500 text-white rounded px-4 py-3 hover:bg-green-600"
+          >
+            Add
+          </button>
+        </form>
+      </div>
+
+      {/* Expense List */}
+      <div className="bg-white p-6 rounded-2xl shadow">
+        <h2 className="text-2xl font-semibold mb-4">Expense History</h2>
+        <div className="bg-white p-6 rounded-2xl shadow mt-8">
+  <h2 className="text-2xl font-semibold mb-4">
+    Expense Statistics
+  </h2>
+
+  <div className="w-full h-96">
+    <ResponsiveContainer>
+      <PieChart>
+        <Pie
+          data={categoryData}
+          dataKey="value"
+          nameKey="name"
+          outerRadius={120}
+          label
+        >
+          {categoryData.map((entry, index) => (
+            <Cell
+              key={index}
+              fill={COLORS[index % COLORS.length]}
+            />
+          ))}
+        </Pie>
+
+        <Tooltip />
+        <Legend />
+      </PieChart>
+    </ResponsiveContainer>
+  </div>
+</div>
+
+        <div className="space-y-3">
+          {expenses.map((expense) => (
+            <div
+              key={expense._id}
+              className="flex justify-between items-center border p-4 rounded-lg"
+            >
+              <div>
+                <h4 className="font-semibold">{expense.title}</h4>
+                <p className="text-sm text-gray-500">
+                  {expense.category} • ₹{expense.amount}
+                </p>
+              </div>
+
+              <button
+                onClick={() => deleteExpense(expense._id)}
+                className="bg-red-500 text-white px-3 py-1 rounded"
+              >
+                Delete
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+    </div>
+  </div>
+);
+}
+
+export default Dashboard;
