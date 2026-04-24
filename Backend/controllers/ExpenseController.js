@@ -54,3 +54,33 @@ export const deleteExpense = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Update Expense
+export const updateExpense = async (req, res) => {
+  try {
+    const expense = await Expense.findById(req.params.id);
+
+    if (!expense) {
+      return res.status(404).json({ message: "Expense not found" });
+    }
+
+    if (expense.user.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const { title, amount, category, date, note } = req.body;
+
+    expense.title = title;
+    expense.amount = amount;
+    expense.category = category;
+    expense.date = date;
+    expense.note = note;
+
+    await expense.save();
+
+    res.json(expense);
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

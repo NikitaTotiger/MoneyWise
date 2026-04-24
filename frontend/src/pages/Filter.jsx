@@ -88,13 +88,24 @@ function Filter() {
           <input type="number" name="minAmount" placeholder="Min Amount" onChange={handleFilterInput} className="border p-3 rounded" />
           <input type="number" name="maxAmount" placeholder="Max Amount" onChange={handleFilterInput} className="border p-3 rounded" />
 
-          <input
-            type="text"
-            name="category"
-            placeholder="Category"
-            onChange={handleFilterInput}
-            className="border p-3 rounded"
-          />
+          <select
+  name="category"
+  value={filterData.category}
+  onChange={handleFilterInput}
+  className="border p-3 rounded"
+  required
+>
+  <option value="">Select Category</option>
+  <option value="Food">Food</option>
+  <option value="Transport">Transport</option>
+  <option value="Shopping">Shopping</option>
+  <option value="Entertainment">Entertainment</option>
+  <option value="Health">Health</option>
+  <option value="Education">Education</option>
+  <option value="Rent">Rent</option>
+  <option value="Utilities">Utilities</option>
+  <option value="Other">Other</option>
+</select>
 
           <button
             onClick={applyFilters}

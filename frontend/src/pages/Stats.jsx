@@ -1,4 +1,5 @@
 import axios from "axios";
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import {
   Bar,
@@ -222,45 +223,59 @@ if (filterType === "daily" && data.length > 0) {
       </div>
           
       {/* 🔥 Insights Cards */}
-<div className="grid md:grid-cols-3 gap-6 mb-6">
+<motion.div
+ className="grid md:grid-cols-3 gap-6 mb-6">
   
-  <div className="bg-white p-4 rounded-xl shadow">
+  <motion.div className="bg-white p-4 rounded-xl shadow">
     <h3 className="text-gray-500">Highest Spending</h3>
     <p className="text-xl font-bold text-red-500">
       {highestMonth?.name} (₹{highestMonth?.value})
     </p>
-  </div>
+  </motion.div>
 
-  <div className="bg-white p-4 rounded-xl shadow">
+  <motion.div className="bg-white p-4 rounded-xl shadow">
     <h3 className="text-gray-500">Lowest Spending</h3>
     <p className="text-xl font-bold text-green-500">
       {lowestMonth?.name} (₹{lowestMonth?.value})
     </p>
-  </div>
+  </motion.div>
 
-  <div className="bg-white p-4 rounded-xl shadow">
+  <motion.div 
+    initial={{ opacity: 0, x: -50 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ duration: 0.5 }}
+    whileHover={{ scale: 1.02 }}
+    whileTap={{scale: 0.98 }}
+  
+    className="bg-white p-4 rounded-xl shadow">
     <h3 className="text-gray-500">Total Spending</h3>
     <p className="text-xl font-bold text-blue-500">
       ₹{totalSpending}
     </p>
-  </div>
+  </motion.div>
 
-</div>
+</motion.div>
 
       {/* 🤖 AI Insight */}
 {comparisonText && (
-  <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 mb-6 rounded">
+  <motion.div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 mb-6 rounded">
     <p className="font-semibold">Smart Insight</p>
     <p>{comparisonText}</p>
-  </div>
+  </motion.div>
 )}
     
       {/* 🧠 Top Category Insight */}
 {topCategoryText && (
-  <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-800 p-4 mb-6 rounded">
+  <motion.div 
+    initial={{ opacity: 0, x: -50 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ duration: 0.5 }}
+    whileHover={{ scale: 1.02, y: -2 }}
+    whileTap={{scale: 0.98 }}
+    className="bg-blue-100 border-l-4 border-blue-500 text-blue-800 p-4 mb-6 rounded">
     <p className="font-semibold">Category Insight</p>
     <p>{topCategoryText}</p>
-  </div>
+  </motion.div>
 )}
 
       {/* 💰 Budget Insight */}

@@ -3,8 +3,8 @@ import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
 import authRoutes from "./routes/authRoutes.js";
+import budgetRoutes from "./routes/budgetRoutes.js";
 import expenseRoutes from "./routes/expenseRoutes.js";
-
 dotenv.config();
 
 const app = express();
@@ -14,6 +14,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
+app.use("/api/budget", budgetRoutes);
 app.use("/api/expenses", expenseRoutes);
 
 // Test Route
