@@ -24,36 +24,46 @@ function Dashboard() {
     note: "",
   });
 
+  const getToken = () => {
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  return userInfo?.token;
+};
+
+const getUserInfo = () => {
+  return JSON.parse(localStorage.getItem("userInfo"));
+};
 
   useEffect(() => {
-    if (!userInfo) {
-      navigate("/login");
-    } else {
-      fetchExpenses();
-      fetchBudget();
-    }
-  }, []);
+  const token = getToken();
 
+  if (!token) {
+    navigate("/login");
+  } else {
+    fetchExpenses();
+    fetchBudget();
+  }
+}, [navigate]);
+  
   const fetchExpenses = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/api/expenses", {
-        headers: {
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      });
+  try {
 
-      setExpenses(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    const res = await axios.get("http://localhost:5001/api/expenses", {
+      headers: {
+        Authorization: `Bearer ${getToken()}`, 
+      },
+    });
+
+    setExpenses(res.data);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   const fetchBudget = async () => {
   try {
-    const res = await axios.get("http://localhost:5000/api/budget", {
+    const res = await axios.get("http://localhost:5001/api/budget", {
       headers: {
-        Authorization: `Bearer ${userInfo.token}`,
+        Authorization: `Bearer ${getToken()}`, 
       },
     });
     setBudget(res.data.budget);
@@ -69,34 +79,36 @@ function Dashboard() {
     });
   };
 
-
+  //userInfo update
   const addExpense = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      await axios.post(
-        "http://localhost:5000/api/expenses",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${userInfo.token}`,
-          },
-        }
-      );
+  try {
 
-      setFormData({
-        title: "",
-        amount: "",
-        category: "",
-        date: "",
-        note: "",
-      });
 
-      fetchExpenses();
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    await axios.post(
+      "http://localhost:5001/api/expenses",
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${getToken()}`, 
+        },
+      }
+    );
+
+    setFormData({
+      title: "",
+      amount: "",
+      category: "",
+      date: "",
+      note: "",
+    });
+
+    fetchExpenses();
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   const editHandler = (expense) => {
   setEditId(expense._id);
@@ -114,11 +126,11 @@ function Dashboard() {
 
   try {
     await axios.put(
-      `http://localhost:5000/api/expenses/${editId}`,
+      `http://localhost:5001/api/expenses/${editId}`,
       formData,
       {
         headers: {
-          Authorization: `Bearer ${userInfo.token}`,
+          Authorization: `Bearer ${getToken()}`, 
         },
       }
     );
@@ -140,9 +152,9 @@ function Dashboard() {
 
   const deleteExpense = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/expenses/${id}`, {
+      await axios.delete(`http://localhost:5001/api/expenses/${id}`, {
         headers: {
-          Authorization: `Bearer ${userInfo.token}`,
+          Authorization: `Bearer ${getToken()}`, 
         },
       });
 
@@ -160,11 +172,11 @@ function Dashboard() {
   const handleBudgetSave = async () => {
   try {
     await axios.put(
-      "http://localhost:5000/api/budget",
+      "http://localhost:5001/api/budget",
       { budget },
       {
         headers: {
-          Authorization: `Bearer ${userInfo.token}`,
+          Authorization: `Bearer ${getToken()}`, 
         },
       }
     );
@@ -229,7 +241,7 @@ const COLORS = [
       
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-4xl font-bold text-gray-800">
-          Welcome, {userInfo?.name} 👋
+          Welcome, {getUserInfo()?.name} 👋
         </h1>
 
         <button

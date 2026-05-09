@@ -21,7 +21,7 @@ function Filter() {
 
   const fetchExpenses = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/expenses", {
+      const res = await axios.get("http://localhost:5001/api/expenses", {
         headers: {
           Authorization: `Bearer ${userInfo.token}`,
         },
