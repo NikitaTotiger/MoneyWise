@@ -14,7 +14,7 @@ export const getBudget = async (req, res) => {
 export const saveBudget = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
-    user.budget = req.body.budget;
+    user.budget = Number(req.body.budget);
     await user.save();
     res.json({ budget: user.budget });
   } catch (error) {

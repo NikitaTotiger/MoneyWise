@@ -16,7 +16,7 @@ function Layout() {
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
       <div className="w-64 bg-slate-950 text-white p-6 border-r border-white/10">
-  <h1 className="text-2xl font-bold mb-10 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+  <h1 className="text-2xl font-bold mb-10 bg-linear-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
     MoneyWise
   </h1>
 

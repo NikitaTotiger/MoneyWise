@@ -117,21 +117,34 @@ const totalSpending = data.reduce((sum, item) => sum + item.value, 0);
 let comparisonText = "";
 
 if (filterType === "monthly" && data.length >= 2) {
-  const sorted = [...data].sort(
-    (a, b) => new Date(`1 ${a.name} 2024`).getTime() - new Date(`1 ${b.name} 2024`).getTime()
+  const sorted = [...data]
+  .filter((item) => item.value > 0)
+  .sort(
+    (a, b) =>
+      new Date(`1 ${a.name} 2024`).getTime() -
+      new Date(`1 ${b.name} 2024`).getTime()
   );
 
+  if (sorted.length >= 2) {
   const last = sorted[sorted.length - 1];
   const prev = sorted[sorted.length - 2];
 
   const diff = last.value - prev.value;
-  const percent = ((diff / prev.value) * 100).toFixed(1);
+
+  let percent = 0;
+
+  if (prev.value > 0) {
+    percent = ((diff / prev.value) * 100).toFixed(1);
+  }
 
   if (diff > 0) {
     comparisonText = `⚠️ You spent ${percent}% more than last month`;
   } else {
     comparisonText = `✅ You spent ${Math.abs(percent)}% less than last month`;
   }
+} else {
+  comparisonText = "Not enough monthly data to compare";
+}
 }
 
     // 🔥 Top Category Detection (only for daily/category view)

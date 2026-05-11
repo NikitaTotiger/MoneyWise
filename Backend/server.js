@@ -9,6 +9,7 @@ dotenv.config();
 
 const app = express();
 //const cors = require('cors');
+app.use(express.json());
 
 // Middleware
 app.use(cors());
@@ -24,7 +25,7 @@ app.use((req, res, next) => {
   allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin", "Access-Control-Request-Method"] 
 }));*/
 
-app.use(express.json());
+
 app.use("/api/auth", authRoutes);
 app.use("/api/budget", budgetRoutes);
 app.use("/api/expenses", expenseRoutes);
