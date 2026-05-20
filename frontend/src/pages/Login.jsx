@@ -25,7 +25,7 @@ function Login() {
       setLoading(true);
 
       const res = await axios.post(
-        "https://moneywise-6v9a.onrender.com",
+        "https://moneywise-6v9a.onrender.com/api/auth/login",
         formData
       );
 
