@@ -26,7 +26,7 @@ function Register() {
       setLoading(true);
       console.info(formData);
       const res = await axios.post(
-        "https://moneywise-6v9a.onrender.com",
+        "https://moneywise-6v9a.onrender.com/api/auth/register",
         formData
       );
 
