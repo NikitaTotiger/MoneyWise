@@ -18,7 +18,7 @@ function MonthlyView() {
 
   const fetchExpenses = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/expenses", {
+      const res = await axios.get("https://moneywise-6v9a.onrender.com", {
         headers: {
           Authorization: `Bearer ${userInfo?.token}`,
         },

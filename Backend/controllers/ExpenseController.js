@@ -8,7 +8,7 @@ export const addExpense = async (req, res) => {
     const expense = await Expense.create({
       user: req.user._id,
       title,
-      amount,
+      amount: Number(amount),
       category,
       date,
       note,
